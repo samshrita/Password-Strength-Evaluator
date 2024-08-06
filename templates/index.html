@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Strength Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #333;
+            color: #fff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #555; /* Dark grey background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="password"], input[type="submit"], button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #777; /* Dark grey input background */
+            color: #fff;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50; /* Green button color */
+            cursor: pointer;
+        }
+        button#generatePassword {
+            background-color: #007bff; /* Blue button color */
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            background-color: #666; /* Dark grey result box */
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Password Strength Checker</h2>
+        <form id="passwordForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <input type="submit" value="Check Strength">
+            <button type="button" id="generatePassword">Generate Password</button>
+        </form>
+        <div id="passwordResult" class="result"></div>
+    </div>
+
+    <script>
+        document.getElementById("passwordForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            
+            fetch("/password_strength", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                var resultDiv = document.getElementById("passwordResult");
+                resultDiv.innerHTML = `
+                    <h3>Password Strength:</h3>
+                    <p>${data.feedback}</p>
+                `;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById("generatePassword").addEventListener("click", function() {
+            fetch("/generate_password")
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("password").value = data.password;
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
